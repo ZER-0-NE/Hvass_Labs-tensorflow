@@ -57,10 +57,10 @@ We then normalize the matrix because the values may be too large or too small fo
 interpretation
 '''
 y_pred = tf.nn.softmax(logits)
-y_pred_cls = tf.armax(y_pred, axis = 1)
+y_pred_cls = tf.argmax(y_pred, axis = 1)
 
 #Optimizing the cost function
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits = logits,
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(logits = logits,
 														labels = y_true)
 '''
 The cross-entropy is a performance measure used in classification. The cross-entropy 
@@ -69,7 +69,7 @@ model exactly matches the desired output then the cross-entropy equals zero.
 The goal of optimization is therefore to minimize the cross-entropy so it gets as 
 close to zero as possible by changing the weights and biases of the model.
 '''
-cost = tf.reduce_mean(cross-entropy)
+cost = tf.reduce_mean(cross_entropy)
 
 optimizer = tf.train.GradientDescentOptimizer(learning_rate = 0.01).minimize(cost)
 
@@ -78,7 +78,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 #creating tensorflow session
 
-session = tf.session()
+session = tf.Session()
 session.run(tf.global_variables_initializer())
 batch_size = 12
 
