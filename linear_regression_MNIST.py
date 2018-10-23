@@ -91,7 +91,7 @@ def optimize(num_iterations):
 		Graph.
 		'''
 		feed_dict_train = {x: x_batch,
-							y_true: y_true_batch}
+						y_true: y_true_batch}
 		session.run(optimizer, feed_dict = feed_dict_train)
 
 feed_dict_test = {x: data.x_test,
@@ -101,4 +101,44 @@ feed_dict_test = {x: data.x_test,
 def print_accuracy():
 	acc = session.run(accuracy, feed_dict = feed_dict_test)
 	print("Accuracy on test set: {0:.1%}".format(acc))
+
+def plot_confusion_matrix():
+	cls_true = data.y_test_cls
+	cls_pred = session.run(y_pred_cls, feed_dict = feed_dict_test)
+
+	cm = confusion_matrix(y_true = cls_true,
+						y_pred = cls_pred)
+	print(cm)
+
+	plt.imshow(cm, interpolation = 'nearest', cmap = plt.cm.Blues)
+
+	plt.tight_layout()
+	plt.colorbar()
+	tick_marks = np.arange(num_classes)
+	plt.xticks(tick_marks, range(num_classes))
+	plt.yticks(tick_marks, range(num_classes))
+	plt.xlabel('Predicted')
+	plt.ylabel('True')
+
+	plt.show()
+
+def plot_example_errors():
+	correct, cls_pred = session.run([correct_prediction, y_pred_cls],
+									feed_dict = feed_dict_test)
+	incorrect = (correct == False)
+
+	images = data.x_test[incorrect]
+	cls_pred = cls_pred[incorrect]
+
+	cls_true = data.y_test_cls[incorrect]
+	plot_images(images=images[0:9],
+				cls_true = cls_true[0:9],
+				cls_pred = cls_pred[0:9])
+
+optimize(num_iterations = 1)
+
+
+
+
+
 
