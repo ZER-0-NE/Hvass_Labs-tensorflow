@@ -143,3 +143,6 @@ layer_fc2 = new_fc_layer(
 						num_outputs = num_classes,
 						use_relu = False)
 
+# Normalizing the values so that they occur between zero and one and all the elements sum to 10
+y_pred = tf.nn.softmax(layer_fc2)
+y_pred_cls = tf.argmax(y_pred, axis = 1)
