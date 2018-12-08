@@ -44,3 +44,16 @@ x_train_pad = pad_sequences(x_train_tokens, maxlen=max_tokens,
                             padding=pad, truncating=pad)
 x_test_pad = pad_sequences(x_test_tokens, maxlen=max_tokens,
                            padding=pad, truncating=pad)
+
+idx = tokenizer.word_index
+inverse_map = dict(zip(idx.values(), idx.keys()))
+
+def tokens_to_string(tokens):
+    # Map from tokens back to words.
+    words = [inverse_map[token] for token in tokens if token != 0]
+    
+    # Concatenate all words.
+    text = " ".join(words)
+
+    return text
+
