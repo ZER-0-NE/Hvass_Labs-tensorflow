@@ -52,11 +52,12 @@ def plot_images(images, cls_true, cls_pred = None):
 				def new_biases(length):
 					return tf.Variable(tf.constant(0.05, shape = [length]))
 
-def new_conv_layer(input, #previous layer input
-					num_input_channels, #of previous layer
-					filter_size, #width and height of each filter
+def new_conv_layer(input,#previous layer input
+					num_input_channels,#of previous layer
+					filter_size,#width and height of each filter
 					num_filters,
-					use_pooling = True)
+					use_pooling = True):
+
 	shape = [filter_size, filter_size, num_input_channels, num_filters]#shape of filter-weights for convolution
 	weights = new_weights(shape = shape)
 	biases = new_biases(length = num_filters)
@@ -80,8 +81,9 @@ def new_conv_layer(input, #previous layer input
 
 	return layer, weights
 
-	def flatten_layer(layer):
-		layer_shape = layer.get_shape()
+
+def flatten_layer(layer):
+	layer_shape = layer.get_shape()
 	'''
 	shape of input layer is assumed to be [num_images, img_width, img_height, num_channels]
 	no. of features is img_width*img_height*num_channels
@@ -98,23 +100,29 @@ def new_conv_layer(input, #previous layer input
 
 	return layer_flat, num_features
 
+
 def new_fc_layer(input, # previous layer
 				num_inputs, #of prev layer
 				num_outputs,
-				use_relu = True)
-weights = new_weights(shape = [num_inputs,  num_outputs])
-biases = new_biases(length = num_outputs)
+				use_relu = True):
+	weights = new_weights(shape = [num_inputs,  num_outputs])
+	biases = new_biases(length = num_outputs)
 
-layer = tf.matmul(input, weights) + biases
-if use_relu:
-	layer = tf.nn.relu(layer)
-
+	layer = tf.matmul(input, weights) + biases
+	if use_relu:
+		layer = tf.nn.relu(layer)
 	return layer
 
-	x = tf.placeholder(tf.float32, shape = [None, img_size_flat], name = 'x')
-	x_image = tf.reshape(x, [-1, img_size, img_size, num_channels])
-	y_true = tf.placeholder(tf.float32, shape = [None, num_classes], name = 'y_true')
-	y_true_cls = tf.argmax(y_true, axis = 1)
+def new_weights(shape):
+	return tf.Variable(tf.truncated_normal(shape, stddev=0.05))
+def new_biases(length):
+	return tf.Variable(tf.constant(0.05, shape = [length]))
+
+
+x = tf.placeholder(tf.float32, shape = [None, img_size_flat], name = 'x')
+x_image = tf.reshape(x, [-1, img_size, img_size, num_channels])
+y_true = tf.placeholder(tf.float32, shape = [None, num_classes], name = 'y_true')
+y_true_cls = tf.argmax(y_true, axis = 1)
 
 #Conv layer 1
 layer_conv1, weights_conv1 = new_conv_layer(
@@ -135,6 +143,13 @@ layer_conv2, weights_conv2 = new_conv_layer(
 layer_flat, num_features = flatten_layer(layer_conv2)
 
 #FC layer
+layer_fc1 = new_fc_layer(
+	input = layer_flat,
+	num_inputs = num_features,
+	num_outputs = fc_size,
+	use_relu = True)
+
+
 layer_fc2 = new_fc_layer(
 	input = layer_fc1,
 	num_inputs = fc_size,
@@ -165,7 +180,7 @@ train_batch_size = 12
 total_iterations = 0
 
 def optimize(num_iterations):
-	global num_iterations
+	global totoal_iterations
 
 	start_time = time.time()
 	for i in range(total_iterations, total_iterations+num_iterations):
