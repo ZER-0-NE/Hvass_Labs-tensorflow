@@ -178,7 +178,6 @@ session.run(tf.global_variables_initializer())
 train_batch_size = 12
 
 total_iterations = 0
-
 def optimize(num_iterations):
 	global totoal_iterations
 
@@ -201,3 +200,88 @@ def optimize(num_iterations):
 			end_time = time.time()
 			time_diff = end_time - start_time
 			print("Time usage: " + str(timedelta(seconds = int(round(time_diff)))))
+
+def plot_example_errors(cls_pred, correct):
+	'''
+	cls_pred is an array of predicted class-number for all images in the test set
+	correct is the boolean array whether the predcited class is equal to the true class for each image in the test-set
+	'''
+	incorrect = (correct == False)
+	images = data.x_test[incorrect]
+	cls_pred = cls_pred[incorrect]
+	cls_true = data.y_test_cls[incorrect]
+
+	plot_images(images=images[0:9],
+		cls_true=cls_true[0:9],
+		cls_pred=cls_pred[0:9])
+
+def plot_confusion_matrix(cls_pred):
+	cls_true = data.y_test_cls
+	cm = confusion_matrix(y_true=cls_true,
+		y_pred=cls_pred)
+	print(cm)
+
+	plt.matshow(cm)
+
+	plt.colorbar()
+	tick_marks = np.arrange(num_classes)
+	plt.xticks(tick_marks, range(num_classes))
+	plt.yticks(tick_marks, range(num_classes))
+	plt.xlabel('Predicted')
+	plt.ylabel('True')
+
+	plt.show()
+
+test_batch_size = 32
+def print_test_accuracy(show_example_errors=False, show_confusion_matrix=False):
+	num_test = data.num_test
+
+	#allocate an array for predicted classes which will be calculated in batches and filled in this array
+	cls_pred = np.zeros(shape=num_test, dtype=np.int)
+	i=0
+	while i<num_test:
+		j = min(i+test_batch_size, num_test) #ending index for next batch
+		images = data.x_test[1:j, :]
+		labels = data.y_test[1:j, :]
+		feed_dict = {x: images,
+                     y_true: labels}
+		cls_pred[i:j] = session.run(y_pred_cls, feed_dict=feed_dict)
+
+		i=j
+
+	cls_true = data.y_test_cls
+	correct = (cls_true==cls_pred)
+
+	correct_sum = correct.sum()
+
+	acc = float(correct_sum) / num_test
+
+	print("Accuracy on Test-Set: {0:.1%} ({1} / {2})".format(acc, correct_sum, num_test))
+
+	if show_example_errors:
+		print("Example Errors: ")
+		plot_example_errors(cls_pred=cls_pred, correct = correct)
+
+	if show_confusion_matrix:
+		print("Confusion_matrix: ")
+		plot_confusion_matrix(cls_pred = cls_pred)
+
+print_test_accuracy()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
