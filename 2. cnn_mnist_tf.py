@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mnist import MNIST
 import keras
+import time
+from datetime import timedelta
 
 data = MNIST()
 
@@ -179,11 +181,11 @@ train_batch_size = 12
 
 total_iterations = 0
 def optimize(num_iterations):
-	global totoal_iterations
+	global total_iterations
 
 	start_time = time.time()
 	for i in range(total_iterations, total_iterations+num_iterations):
-		x_batch, y_true_batch = data.random(batch_size = train_batch_size)
+		x_batch, y_true_batch,_ = data.random_batch(batch_size = train_batch_size)
 
 		feed_dict_train = {x: x_batch,
 		y_true: y_true_batch}
@@ -192,14 +194,14 @@ def optimize(num_iterations):
 
 		if i % 100 == 0:
 			acc = session.run(accuracy, feed_dict = feed_dict_train)
-			msg = "Optimization iteration: {0:6}, Training accuracy: {0:6.1%}"
+			msg = "Optimization iteration: {0:6}, Training accuracy: {1:>6.1%}"
 
 			print(msg.format(i+1, acc))
 
 			total_iterations += num_iterations
 			end_time = time.time()
 			time_diff = end_time - start_time
-			print("Time usage: " + str(timedelta(seconds = int(round(time_diff)))))
+			print("Time usage: " + str(timedelta(seconds=int(round(time_diff)))))
 
 def plot_example_errors(cls_pred, correct):
 	'''
@@ -241,8 +243,8 @@ def print_test_accuracy(show_example_errors=False, show_confusion_matrix=False):
 	i=0
 	while i<num_test:
 		j = min(i+test_batch_size, num_test) #ending index for next batch
-		images = data.x_test[1:j, :]
-		labels = data.y_test[1:j, :]
+		images = data.x_test[i:j, :]
+		labels = data.y_test[i:j, :]
 		feed_dict = {x: images,
                      y_true: labels}
 		cls_pred[i:j] = session.run(y_pred_cls, feed_dict=feed_dict)
@@ -266,8 +268,9 @@ def print_test_accuracy(show_example_errors=False, show_confusion_matrix=False):
 		print("Confusion_matrix: ")
 		plot_confusion_matrix(cls_pred = cls_pred)
 
-print_test_accuracy()
 
+print_test_accuracy()
+optimize(num_iterations=1000)
 
 
 
