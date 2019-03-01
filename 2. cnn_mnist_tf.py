@@ -9,12 +9,12 @@ from datetime import timedelta
 data = MNIST()
 
 #conv1
-filter_size1 = 5
+filter_size1 = 5 #5x5
 num_filters1 = 16
 
 #conv2
 filter_size2 = 5
-num_filters2 = 26
+num_filters2 = 36
 
 #fully-connected
 fc_size = 128
@@ -49,10 +49,10 @@ def plot_images(images, cls_true, cls_pred = None):
 			cls_true = data.y_test_cls[0:9]
 			plot_images(images = images, cls_true = cls_true)
 
-			def new_weights(shape):
-				return tf.Variable(tf.truncated_normal(shape, stddev = 0.05))
-				def new_biases(length):
-					return tf.Variable(tf.constant(0.05, shape = [length]))
+def new_weights(shape):
+	return tf.Variable(tf.truncated_normal(shape, stddev=0.05))
+def new_biases(length):
+	return tf.Variable(tf.constant(0.05, shape = [length]))
 
 def new_conv_layer(input,#previous layer input
 					num_input_channels,#of previous layer
@@ -114,12 +114,6 @@ def new_fc_layer(input, # previous layer
 	if use_relu:
 		layer = tf.nn.relu(layer)
 	return layer
-
-def new_weights(shape):
-	return tf.Variable(tf.truncated_normal(shape, stddev=0.05))
-def new_biases(length):
-	return tf.Variable(tf.constant(0.05, shape = [length]))
-
 
 x = tf.placeholder(tf.float32, shape = [None, img_size_flat], name = 'x')
 x_image = tf.reshape(x, [-1, img_size, img_size, num_channels])
