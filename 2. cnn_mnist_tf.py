@@ -171,7 +171,7 @@ session = tf.Session()
 
 session.run(tf.global_variables_initializer())
 
-train_batch_size = 12
+train_batch_size = 32
 
 total_iterations = 0
 def optimize(num_iterations):
